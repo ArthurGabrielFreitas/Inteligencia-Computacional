@@ -32,6 +32,10 @@ function main() {
     }));
 
     console.log(populacaoAvaliada);
+
+    // Ordena a população pela avaliação (menor valor é melhor)
+    populacaoAvaliada.sort((a, b) => a.avaliacao - b.avaliacao);
+    console.log(populacaoAvaliada[0]);
 }
 
 function popInicial(

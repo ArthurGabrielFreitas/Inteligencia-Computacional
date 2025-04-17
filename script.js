@@ -31,7 +31,8 @@ function main() {
         avaliacao: avaliacoes[index],
     }));
 
-    console.log(populacaoAvaliada);
+    populacaoAvaliada.sort((a, b) => a.avaliacao - b.avaliacao);
+    console.log(populacaoAvaliada[0]);
 }
 
 function gerarPopulacaoInicial(

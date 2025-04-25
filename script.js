@@ -31,7 +31,20 @@ function main() {
         avaliacao: avaliacoes[i],
     }));
 
-    console.log(populacaoAvaliada);
+    // console.log(populacaoAvaliada);
+
+    const populacaoOrdenada = ordenacaoMergeSort(populacaoAvaliada);
+
+    // console.log(populacaoOrdenada);
+
+    // const populacaoOrdenadaNativa = ordenacaoNativa(populacaoAvaliada);
+
+    // console.log(populacaoOrdenadaNativa);
+
+    const populacaoSelecionada = selecao(populacaoOrdenada);
+
+    console.log(populacaoSelecionada);
+
 }
 
 function popInicial(
@@ -173,6 +186,7 @@ function avaliaIndividuo(individuo, intervaloSemestre, periodos) {
                 }
                 if (professor1 == professor2) {
                     avaliacao++;
+                    // Mostra no console as aulas com mesmo professor para conferência manual
                     // console.log(aula1 + " " + aula2);
                     // console.log(i + 1, numeroProximaAula + 1);
                     // console.log(avaliacao);
@@ -182,6 +196,39 @@ function avaliaIndividuo(individuo, intervaloSemestre, periodos) {
     }
     // console.log("Avaliação final do indivíduo: ", avaliacao);
     return avaliacao;
+}
+
+function ordenacaoMergeSort(populacao){
+    if (populacao.length == 1) {
+        return populacao;
+    }
+    const metadeVetorInicial = Math.floor(populacao.length / 2);
+    const vetor1 = ordenacaoMergeSort(populacao.slice(0, metadeVetorInicial));
+    const vetor2 = ordenacaoMergeSort(populacao.slice(metadeVetorInicial));
+    const resultado = [];
+    
+    while (vetor1.length > 0 && vetor2.length > 0) {
+        if (vetor1[0].avaliacao <= vetor2[0].avaliacao) {
+            resultado.push(vetor1.shift());
+        } else {
+            resultado.push(vetor2.shift());
+        }
+    }
+    
+    return resultado.concat(vetor1).concat(vetor2);
+}
+
+function ordenacaoNativa(populacao){
+    return populacao.sort((a, b) => a.avaliacao - b.avaliacao);
+}
+
+function selecao(populacaoOrdenada){
+    const numeroAleatorio1 = Math.floor(Math.random() * populacaoOrdenada.length / 2);
+    const numeroAleatorio2 = Math.floor(Math.random() * populacaoOrdenada.length);
+
+    const populacaoSelecionada = [populacaoOrdenada[numeroAleatorio1], populacaoOrdenada[numeroAleatorio2]];
+
+    return populacaoSelecionada;
 }
 
 main();

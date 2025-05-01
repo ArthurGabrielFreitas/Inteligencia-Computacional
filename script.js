@@ -7,6 +7,9 @@ function main() {
     const periodos = 5;
     const intervaloSemestre = horariosDia * diasSemana;
     const quantidadeIndividuos = 10;
+    const pontosDeCorte = 3;
+    const pc = 0.98;
+    const pm = 0.05;
 
     const populacaoAleatorizada = popInicial(
         professores,
@@ -31,9 +34,17 @@ function main() {
         avaliacao: avaliacoes[i],
     }));
 
+    // Colocar num array o indivíduo melhor avaliado de cada geração
+    // se encontrar um indivíduo com zero choques, parar
+
     // console.log(populacaoAvaliada);
 
-    const populacaoOrdenada = ordenacaoMergeSort(populacaoAvaliada);
+    const populacaoOrdenadaAvaliada = ordenacaoMergeSort(populacaoAvaliada);
+
+    const populacaoOrdenada = [];
+    populacaoOrdenadaAvaliada.forEach((ind) => {
+        populacaoOrdenada.push(ind.populacao);
+    });
 
     // console.log(populacaoOrdenada);
 
@@ -41,9 +52,19 @@ function main() {
 
     // console.log(populacaoOrdenadaNativa);
 
-    const populacaoSelecionada = selecao(populacaoOrdenada);
+    const individuosSelecionados = selecao(populacaoOrdenada);
 
-    console.log(populacaoSelecionada);
+    // console.log(individuosSelecionados);
+
+    const individuosCruzados = cruzamento(
+        individuosSelecionados,
+        intervaloSemestre,
+        periodos,
+        pontosDeCorte,
+        pc
+    );
+
+    // const mutados = mutacao();
 }
 
 function popInicial(
@@ -229,12 +250,84 @@ function selecao(populacaoOrdenada) {
         Math.random() * populacaoOrdenada.length
     );
 
-    const populacaoSelecionada = [
+    const individuosSelecionados = [
         populacaoOrdenada[numeroAleatorio1],
         populacaoOrdenada[numeroAleatorio2],
     ];
 
-    return populacaoSelecionada;
+    return individuosSelecionados;
 }
+
+function cruzamento(
+    individuosSelecionados,
+    intervaloSemestre,
+    periodos,
+    pontosDeCorte = 0,
+    pc
+) {
+    const random = Math.random();
+    if (random < pc) {
+        if (!pontosDeCorte) {
+            pontosDeCorte = Math.ceil(Math.random() * (periodos - 1));
+        }
+
+        const indicesPontosDeCorte = [];
+        while (indicesPontosDeCorte.length < pontosDeCorte) {
+            const numero = Math.floor(Math.random() * (periodos - 1));
+            if (!indicesPontosDeCorte.includes(numero)) {
+                indicesPontosDeCorte.push(numero);
+            }
+        }
+        indicesPontosDeCorte.sort((a, b) => a - b);
+        console.log(indicesPontosDeCorte);
+
+        const semestresPai1 = [],
+            semestresPai2 = [];
+        const vetorPais = [semestresPai1, semestresPai2];
+        vetorPais.forEach((pai, index) => {
+            for (let i = 0, j = 1; i < periodos; i++, j++) {
+                pai.push(
+                    individuosSelecionados[index].slice(
+                        i * intervaloSemestre,
+                        j * intervaloSemestre
+                    )
+                );
+            }
+        });
+
+        // console.log(vetorPais);
+
+        let trocaGenes = false;
+        let cortes = [-1, ...indicesPontosDeCorte, periodos - 1]; // garante intervalos completos
+        
+        for (let l = 0; l < cortes.length - 1; l++) {
+            const inicio = cortes[l] + 1;
+            const fim = cortes[l + 1];
+            
+            for (let k = inicio; k <= fim; k++) {
+                console.log(cortes[l], k);
+                if (trocaGenes) {
+                    console.log("Trocando genes");
+                    const semestreAux = vetorPais[0][k];
+                    vetorPais[0][k] = vetorPais[1][k];
+                    vetorPais[1][k] = semestreAux;
+                }
+            }
+        
+            trocaGenes = !trocaGenes; // alterna apenas ao final de cada intervalo
+        }
+        // console.log(
+        //     "---------------------------------------------------------"
+        // );
+        // console.log(vetorPais);
+
+        return vetorPais;
+    } else {
+        return individuosSelecionados;
+    }
+}
+
+// Mutação: aleatorizar (1/2 ou 1/4) dos horários de (1, 2, 3) período(s)
+// if(random < pm)
 
 main();

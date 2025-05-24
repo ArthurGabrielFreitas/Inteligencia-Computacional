@@ -1,5 +1,5 @@
 const indicadorNumeroAula = true;
-function main() {
+function algoritmoGenetico() {
     const professores = 10;
     const disciplinas = 25;
     const horariosDia = 4;
@@ -7,6 +7,7 @@ function main() {
     const periodos = 5;
     const intervaloSemestre = horariosDia * diasSemana;
     const quantidadeIndividuos = 10;
+    const maxGeracoes = 100;
     const pontosDeCorte = 3;
     const pc = 0.98;
     const pm = 0.05;
@@ -19,62 +20,112 @@ function main() {
         quantidadeIndividuos
     );
 
+    const listaMelhoresSolucoes = [];
+
     // console.log(populacaoAleatorizada);
 
-    const avaliacoes = avaliacao(
-        populacaoAleatorizada,
+    let geracoes = 0;
+    let proximaGeracao = [];
+
+    while (geracoes < maxGeracoes) {
+        let populacaoAtual = [];
+
+        if (geracoes == 0) {
+            populacaoAtual = populacaoAleatorizada;
+        } else {
+            populacaoAtual = proximaGeracao;
+            proximaGeracao = [];
+        }
+
+        const populacaoAvaliada = avaliacao(
+            populacaoAtual,
+            intervaloSemestre,
+            periodos
+        );
+
+        // console.log(avaliacoes);
+
+        // Colocar num array o indivíduo melhor avaliado de cada geração
+        // se encontrar um indivíduo com zero choques, parar
+
+        // console.log(populacaoAvaliada);
+
+        const populacaoOrdenadaAvaliada = ordenacaoMergeSort(populacaoAvaliada);
+
+        // console.log("População ordenada: ", populacaoOrdenadaAvaliada[0].avaliacao);
+
+        const populacaoOrdenada = [];
+
+        // Transforma o array de objetos em um array simples, sem o atributo de avaliação
+        populacaoOrdenadaAvaliada.forEach((ind) => {
+            populacaoOrdenada.push(ind.populacao);
+        });
+
+        // console.log(populacaoOrdenada);
+
+        // const populacaoOrdenadaNativa = ordenacaoNativa(populacaoAvaliada);
+
+        // console.log(populacaoOrdenadaNativa);
+
+        listaMelhoresSolucoes.push({
+            ...populacaoOrdenadaAvaliada[0],
+            geracao: geracoes,
+        });
+
+        if (populacaoOrdenadaAvaliada[0].avaliacao == 0) {
+            console.log("Indivíduo com zero choques encontrado!");
+            populacaoOrdenadaAvaliada[0].geracao = geracoes;
+            console.log(populacaoOrdenadaAvaliada[0]);
+            return populacaoOrdenadaAvaliada[0];
+        }
+
+        geracoes++;
+
+        while (proximaGeracao.length < quantidadeIndividuos) {
+            const individuosSelecionados = selecao(populacaoOrdenada);
+
+            // console.log(individuosSelecionados);
+
+            const individuosCruzados = cruzamento(
+                individuosSelecionados,
+                intervaloSemestre,
+                periodos,
+                pontosDeCorte,
+                pc
+            );
+
+            // console.log(individuosCruzados);
+
+            const individuosMutados = mutacao(
+                individuosCruzados,
+                intervaloSemestre,
+                periodos,
+                pm
+            );
+
+            // console.log(individuosMutados);
+
+            proximaGeracao.push(...individuosMutados);
+
+        }
+        // console.log("próxima geração: ", proximaGeracao);
+    }
+    // console.log("Número máximo de gerações atingido! ", geracoes);
+
+    // console.log(listaMelhoresSolucoes);
+
+    const populacaoFinalAvaliada = avaliacao(
+        listaMelhoresSolucoes,
         intervaloSemestre,
         periodos
     );
-
-    // console.log(avaliacoes);
-
-    const populacaoAvaliada = populacaoAleatorizada.map((pop, i) => ({
-        populacao: pop,
-        avaliacao: avaliacoes[i],
-    }));
-
-    // Colocar num array o indivíduo melhor avaliado de cada geração
-    // se encontrar um indivíduo com zero choques, parar
-
-    // console.log(populacaoAvaliada);
-
-    const populacaoOrdenadaAvaliada = ordenacaoMergeSort(populacaoAvaliada);
-
-    const populacaoOrdenada = [];
-    populacaoOrdenadaAvaliada.forEach((ind) => {
-        populacaoOrdenada.push(ind.populacao);
-    });
-
-    // console.log(populacaoOrdenada);
-
-    // const populacaoOrdenadaNativa = ordenacaoNativa(populacaoAvaliada);
-
-    // console.log(populacaoOrdenadaNativa);
-
-    const individuosSelecionados = selecao(populacaoOrdenada);
-
-    // console.log(individuosSelecionados);
-
-    const individuosCruzados = cruzamento(
-        individuosSelecionados,
-        intervaloSemestre,
-        periodos,
-        pontosDeCorte,
-        pc
+    const populacaoFinalOrdenadaAvaliada = ordenacaoMergeSort(
+        populacaoFinalAvaliada
     );
 
-    // console.log(individuosCruzados);
-    
-    const individuosMutados = mutacao(
-        individuosCruzados,
-        intervaloSemestre,
-        periodos,
-        pm
-    );
+    console.log("População ordenada: ", populacaoFinalOrdenadaAvaliada[0]);
 
-    // console.log(individuosMutados);
-
+    return populacaoFinalOrdenadaAvaliada[0];
 }
 
 function popInicial(
@@ -168,15 +219,40 @@ function gerarSemestreAleatorizado(semestre) {
 
 function avaliacao(populacaoAleatorizada, intervaloSemestre, periodos) {
     const avaliacoes = [];
-    for (let i = 0; i < populacaoAleatorizada.length; i++) {
-        let avaliacaoIndividuo = avaliaIndividuo(
-            populacaoAleatorizada[i],
-            intervaloSemestre,
-            periodos
+    const populacaoAvaliada = [];
+    if (!Array.isArray(populacaoAleatorizada[0])) {
+        for (let i = 0; i < populacaoAleatorizada.length; i++) {
+            let avaliacaoIndividuo = avaliaIndividuo(
+                populacaoAleatorizada[i].populacao,
+                intervaloSemestre,
+                periodos
+            );
+            avaliacoes.push(avaliacaoIndividuo);
+        }
+        populacaoAvaliada.push(
+            ...populacaoAleatorizada.map((pop, i) => ({
+                ...pop,
+                avaliacao: avaliacoes[i],
+            }))
         );
-        avaliacoes.push(avaliacaoIndividuo);
+    } else {
+        for (let i = 0; i < populacaoAleatorizada.length; i++) {
+            let avaliacaoIndividuo = avaliaIndividuo(
+                populacaoAleatorizada[i],
+                intervaloSemestre,
+                periodos
+            );
+            avaliacoes.push(avaliacaoIndividuo);
+        }
+        populacaoAvaliada.push(
+            ...populacaoAleatorizada.map((pop, i) => ({
+                populacao: pop,
+                avaliacao: avaliacoes[i],
+            }))
+        );
     }
-    return avaliacoes;
+
+    return populacaoAvaliada;
 }
 
 function avaliaIndividuo(individuo, intervaloSemestre, periodos) {
@@ -229,7 +305,7 @@ function avaliaIndividuo(individuo, intervaloSemestre, periodos) {
 }
 
 function ordenacaoMergeSort(populacao) {
-    if (populacao.length == 1) {
+    if (populacao.length <= 1) {
         return populacao;
     }
     const metadeVetorInicial = Math.floor(populacao.length / 2);
@@ -348,9 +424,7 @@ function mutacao(individuosSelecionados, intervaloSemestre, periodos, pm) {
         if (random < pm) {
             let alteracoes = 0;
             do {
-                const semestreAleatorio = Math.floor(
-                    Math.random() * periodos
-                );
+                const semestreAleatorio = Math.floor(Math.random() * periodos);
                 const aulaAleatoria1 = Math.floor(
                     Math.random() * intervaloSemestre
                 );
@@ -366,9 +440,10 @@ function mutacao(individuosSelecionados, intervaloSemestre, periodos, pm) {
                 //     ]);
 
                 // Realiza a troca das aulas do mesmo semestre
-                const aulaAux = individuosSelecionados[i][
-                    semestreAleatorio * intervaloSemestre + aulaAleatoria1
-                ];
+                const aulaAux =
+                    individuosSelecionados[i][
+                        semestreAleatorio * intervaloSemestre + aulaAleatoria1
+                    ];
                 individuosSelecionados[i][
                     semestreAleatorio * intervaloSemestre + aulaAleatoria1
                 ] =
@@ -380,10 +455,11 @@ function mutacao(individuosSelecionados, intervaloSemestre, periodos, pm) {
                 ] = aulaAux;
                 alteracoes++;
                 random = Math.random();
-            } while (random < 0.80 && alteracoes < intervaloSemestre / 2);
-            console.log("Alterações: ", alteracoes);
+            } while (random < 0.75 && alteracoes < intervaloSemestre / 2);
+            // console.log("Alterações: ", alteracoes);
         }
     }
+    return individuosSelecionados;
 }
 
-main();
+algoritmoGenetico();

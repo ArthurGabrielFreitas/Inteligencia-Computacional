@@ -64,7 +64,17 @@ function main() {
         pc
     );
 
-    // const mutados = mutacao();
+    // console.log(individuosCruzados);
+    
+    const individuosMutados = mutacao(
+        individuosCruzados,
+        intervaloSemestre,
+        periodos,
+        pm
+    );
+
+    // console.log(individuosMutados);
+
 }
 
 function popInicial(
@@ -279,7 +289,7 @@ function cruzamento(
             }
         }
         indicesPontosDeCorte.sort((a, b) => a - b);
-        console.log(indicesPontosDeCorte);
+        // console.log(indicesPontosDeCorte);
 
         const semestresPai1 = [],
             semestresPai2 = [];
@@ -299,27 +309,30 @@ function cruzamento(
 
         let trocaGenes = false;
         let cortes = [-1, ...indicesPontosDeCorte, periodos - 1]; // garante intervalos completos
-        
+
         for (let l = 0; l < cortes.length - 1; l++) {
             const inicio = cortes[l] + 1;
             const fim = cortes[l + 1];
-            
+
             for (let k = inicio; k <= fim; k++) {
-                console.log(cortes[l], k);
+                // console.log(cortes[l], k);
                 if (trocaGenes) {
-                    console.log("Trocando genes");
+                    // console.log("Trocando genes");
                     const semestreAux = vetorPais[0][k];
                     vetorPais[0][k] = vetorPais[1][k];
                     vetorPais[1][k] = semestreAux;
                 }
             }
-        
+
             trocaGenes = !trocaGenes; // alterna apenas ao final de cada intervalo
         }
         // console.log(
         //     "---------------------------------------------------------"
         // );
         // console.log(vetorPais);
+
+        vetorPais[0] = vetorPais[0].flat();
+        vetorPais[1] = vetorPais[1].flat();
 
         return vetorPais;
     } else {
@@ -328,6 +341,49 @@ function cruzamento(
 }
 
 // Mutação: aleatorizar (1/2 ou 1/4) dos horários de (1, 2, 3) período(s)
-// if(random < pm)
+
+function mutacao(individuosSelecionados, intervaloSemestre, periodos, pm) {
+    for (let i = 0; i < individuosSelecionados.length; i++) {
+        let random = Math.random();
+        if (random < pm) {
+            let alteracoes = 0;
+            do {
+                const semestreAleatorio = Math.floor(
+                    Math.random() * periodos
+                );
+                const aulaAleatoria1 = Math.floor(
+                    Math.random() * intervaloSemestre
+                );
+                const aulaAleatoria2 = Math.floor(
+                    Math.random() * intervaloSemestre
+                );
+                // console.log(semestreAleatorio * intervaloSemestre + aulaAleatoria1);
+                // console.log(semestreAleatorio * intervaloSemestre + aulaAleatoria2);
+                // console.log("trocando: ", individuosSelecionados[i][
+                //     semestreAleatorio * intervaloSemestre + aulaAleatoria1
+                // ], individuosSelecionados[i][
+                //         semestreAleatorio * intervaloSemestre + aulaAleatoria2
+                //     ]);
+
+                // Realiza a troca das aulas do mesmo semestre
+                const aulaAux = individuosSelecionados[i][
+                    semestreAleatorio * intervaloSemestre + aulaAleatoria1
+                ];
+                individuosSelecionados[i][
+                    semestreAleatorio * intervaloSemestre + aulaAleatoria1
+                ] =
+                    individuosSelecionados[i][
+                        semestreAleatorio * intervaloSemestre + aulaAleatoria2
+                    ];
+                individuosSelecionados[i][
+                    semestreAleatorio * intervaloSemestre + aulaAleatoria2
+                ] = aulaAux;
+                alteracoes++;
+                random = Math.random();
+            } while (random < 0.80 && alteracoes < intervaloSemestre / 2);
+            console.log("Alterações: ", alteracoes);
+        }
+    }
+}
 
 main();

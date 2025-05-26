@@ -1,0 +1,133 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #c9d0d6;
+    color: white;
+    border-bottom: 4px solid #16a085;
+}
+
+.main-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.main-header button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #16a085;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.main-header button:hover {
+    background-color: #13836c;
+}
+
+
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #ccc;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+input[type="number"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #0052a3;
+}
+
+.hidden {
+  display: none;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #999;
+  padding: 8px;
+  text-align: center;
+}
+
+label.aula-indicador-label {
+    display: flex;
+    align-items: left;
+    justify-content: space-between;
+    gap: 1em;
+}
+
+.aula-indicador-span {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+input[type="radio"] {
+    accent-color: #0066cc;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+input[type="radio"]:focus {
+    outline: 2px solid #0052a3;
+    outline-offset: 2px;
+}
+
+label.aula-indicador-radio {
+    margin-right: 1em;
+    cursor: pointer;
+}
+
+label.aula-indicador-radio:last-child {
+    margin-right: 0;
+}

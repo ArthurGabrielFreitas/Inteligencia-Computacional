@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Configurações - Algoritmo Genético</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <header class="main-header">
+            <h1>Formulário</h1>
+            <button onclick="window.location.href='index.html'">
+                Home
+            </button>
+        </header>
+        <div class="container">
+            <h1>Parâmetros do Problema</h1>
+            <form id="formParametros1">
+                <label
+                    >Quantidade de Professores:
+                    <input
+                        type="number"
+                        name="professores"
+                        value="10"
+                        required
+                    />
+                </label>
+                <label
+                    >Quantidade de Disciplinas:
+                    <input
+                        type="number"
+                        name="disciplinas"
+                        value="25"
+                        required
+                    />
+                </label>
+                <label
+                    >Aulas por Dia:
+                    <input
+                        type="number"
+                        name="horariosDia"
+                        value="4"
+                        required
+                    />
+                </label>
+                <label
+                    >Dias de Aula na Semana:
+                    <input type="number" name="diasSemana" value="5" required />
+                </label>
+                <label
+                    >Quantidade de Períodos (Semestres):
+                    <input type="number" name="periodos" value="5" required />
+                </label>
+                <label>
+                    Mostrar identificador de número da aula?
+                    <span class="aula-indicador-span">
+                        <input
+                            type="radio"
+                            id="indicadorSim"
+                            name="indicadorNumeroAula"
+                            value="true"
+                            checked
+                        />
+                        <label class="aula-indicador-label" for="indicadorSim"
+                            >Sim</label
+                        >
+                        <input
+                            type="radio"
+                            id="indicadorNao"
+                            name="indicadorNumeroAula"
+                            value="false"
+                        />
+                        <label class="aula-indicador-label" for="indicadorNao"
+                            >Não</label
+                        >
+                    </span>
+                </label>
+                <button type="submit">Próximo</button>
+            </form>
+
+            <form id="formParametros2" class="hidden">
+                <h2>Parâmetros do Algoritmo Genético</h2>
+                <label
+                    >Indivíduos por Geração:
+                    <input
+                        type="number"
+                        name="quantidadeIndividuos"
+                        value="100"
+                        required
+                    />
+                </label>
+                <label
+                    >Máximo de Gerações:
+                    <input
+                        type="number"
+                        name="maxGeracoes"
+                        value="500"
+                        required
+                    />
+                </label>
+                <label
+                    >Quantidade de Pontos de Corte:
+                    <input
+                        type="number"
+                        name="pontosDeCorte"
+                        value="3"
+                        required
+                    />
+                </label>
+                <label
+                    >Probabilidade de Cruzamento (0-1):
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="pc"
+                        value="0.9"
+                        required
+                    />
+                </label>
+                <label
+                    >Probabilidade de Mutação (0-1):
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="pm"
+                        value="0.05"
+                        required
+                    />
+                </label>
+                <button type="submit">Executar</button>
+            </form>
+
+            <div id="resultado"></div>
+        </div>
+
+        <script src="script.js"></script>
+        <script src="algoritmo-genetico.js"></script>
+    </body>
+</html>

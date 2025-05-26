@@ -1,145 +1,89 @@
-const USE_CLASS_NUMBER_IN_CODE = true;
+const header = document.querySelector("header");
+const form1 = document.getElementById("formParametros1");
+const form2 = document.getElementById("formParametros2");
+const resultadoDiv = document.getElementById("resultado");
 
-function main() {
-    const config = {
-        professores: 10,
-        disciplinas: 25,
-        horariosPorDia: 4,
-        diasPorSemana: 5,
-        periodos: 5,
-        quantidadeIndividuos: 10,
-    };
+let parametrosProblema = {};
 
-    const intervaloSemestre = config.horariosPorDia * config.diasPorSemana;
-
-    const populacaoInicial = gerarPopulacaoInicial(
-        config.professores,
-        config.disciplinas,
-        config.horariosPorDia,
-        intervaloSemestre,
-        config.quantidadeIndividuos
-    );
-
-    const avaliacoes = avaliarPopulacao(
-        populacaoInicial,
-        intervaloSemestre,
-        config.periodos
-    );
-
-    const populacaoAvaliada = populacaoInicial.map((individuo, index) => ({
-        individuo,
-        avaliacao: avaliacoes[index],
-    }));
-
-    const populacaoOrdenada = populacaoAvaliada.sort((a, b) => a.avaliacao - b.avaliacao);
-
-    const populacaoSelecionada = selecao(populacaoOrdenada);
-}
-
-function gerarPopulacaoInicial(
-    professores,
-    disciplinas,
-    horariosPorDia,
-    intervaloSemestre,
-    quantidadeIndividuos
-) {
-    const codigosDisciplinas = gerarCodigosDisciplinas(
-        professores,
-        disciplinas,
-        horariosPorDia
-    );
-
-    const individuoBase = dividirCodigosPorSemestre(
-        codigosDisciplinas,
-        intervaloSemestre
-    );
-
-    return Array.from({ length: quantidadeIndividuos }, () =>
-        embaralharIndividuo(individuoBase)
-    );
-}
-
-function gerarCodigosDisciplinas(professores, disciplinas, horariosDia) {
-    const listCodigos = [];
-    let codDis = 0;
-
-    while (codDis < disciplinas) {
-        for (let codProf = 0; codProf < professores && codDis < disciplinas; codProf++) {
-            for (let j = 0; j < horariosDia; j++) {
-                const aula = USE_CLASS_NUMBER_IN_CODE
-                    ? `${j}${codProf.toString().padStart(2, "0")}${codDis.toString().padStart(2, "0")}`
-                    : `${codProf.toString().padStart(2, "0")}${codDis.toString().padStart(2, "0")}`;
-                listCodigos.push(aula);
-            }
-            codDis++;
-        }
-    }
-
-    return listCodigos;
-}
-
-function dividirCodigosPorSemestre(codigos, intervaloSemestre) {
-    const semestres = [];
-
-    for (let i = 0; i < codigos.length; i += intervaloSemestre) {
-        semestres.push(codigos.slice(i, i + intervaloSemestre));
-    }
-
-    return semestres;
-}
-
-function embaralharIndividuo(individuoBase) {
-    return individuoBase.flatMap(embaralharSemestre);
-}
-
-function embaralharSemestre(semestre) {
-    for (let i = semestre.length - 1; i > 0; i--) {
-        const indiceAleatorio = Math.floor(Math.random() * (i + 1));
-        [semestre[i], semestre[indiceAleatorio]] = [
-            semestre[indiceAleatorio],
-            semestre[i],
-        ];
-    }
-    return semestre;
-}
-
-function avaliarPopulacao(populacao, intervaloSemestre, periodos) {
-    return populacao.map((individuo) =>
-        avaliarIndividuo(individuo, intervaloSemestre, periodos)
-    );
-}
-
-function avaliarIndividuo(individuo, intervaloSemestre, periodos) {
-    let conflitos = 0;
-
-    for (let i = 0; i < intervaloSemestre; i++) {
-        for (let j = 0; j < (periodos - 1) * intervaloSemestre; j += intervaloSemestre) {
-            const aula1 = individuo[i + j];
-            const professor1 = extrairCodigoProfessor(aula1);
-
-            for (let k = j + intervaloSemestre; k < periodos * intervaloSemestre; k += intervaloSemestre) {
-                const aula2 = individuo[i + k];
-                const professor2 = extrairCodigoProfessor(aula2);
-
-                if (professor1 === professor2) {
-                    conflitos++;
-                }
+form1.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const dados = new FormData(form1);
+    dados.forEach((valor, chave) => {
+        if (Number(valor)) {
+            parametrosProblema[chave] = Number(valor);
+        } else {
+            if (valor === "true") {
+                parametrosProblema[chave] = true;
+            } else if (valor === "false") {
+                parametrosProblema[chave] = false;
+            } else {
+                parametrosProblema[chave] = valor;
             }
         }
+    });
+    form1.classList.add("hidden");
+    form2.classList.remove("hidden");
+});
+
+form2.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const dados = new FormData(form2);
+    dados.forEach((valor, chave) => {
+        parametrosProblema[chave] = Number(valor);
+    });
+    form2.classList.add("hidden");
+    header.getElementsByTagName("h1")[0].innerText =
+        "Resultados do Algoritmo Genético";
+
+    const resultado = algoritmoGenetico(parametrosProblema);
+
+    resultadoDiv.innerHTML = `
+    <h2>Melhor Solução Encontrada</h2>
+    <p><strong>Avaliação:</strong> ${resultado.avaliacao}</p>
+    <p><strong>Geração:</strong> ${resultado.geracao}</p>
+    <h3>Distribuição de Aulas:</h3>
+    ${gerarTabela(resultado.populacao, parametrosProblema)}
+  `;
+});
+
+function gerarTabela(populacao, params) {
+    const { periodos, diasSemana, horariosDia } = params;
+    const linhas = [];
+
+    for (let p = 0; p < periodos; p++) {
+        linhas.push(`<h4>Período ${p + 1}</h4>`);
+        linhas.push("<table><tr>");
+
+        for (let d = 0; d < diasSemana; d++) {
+            linhas.push(`<th>Dia ${d + 1}</th>`);
+        }
+
+        linhas.push("</tr>");
+        for (let a = 0; a < horariosDia; a++) {
+            linhas.push("<tr>");
+            for (let d = 0; d < diasSemana; d++) {
+                const index =
+                    p * diasSemana * horariosDia + d * horariosDia + a;
+                const codigo = populacao[index] || "-----";
+                const aula = formatarCodigo(codigo);
+                linhas.push(`<td>${aula}</td>`);
+            }
+            linhas.push("</tr>");
+        }
+        linhas.push("</table>");
     }
 
-    return conflitos;
+    return linhas.join("");
 }
 
-function extrairCodigoProfessor(aula) {
-    return USE_CLASS_NUMBER_IN_CODE ? aula.slice(1, 3) : aula.slice(0, 2);
+function formatarCodigo(codigo) {
+    if (typeof codigo !== "string" || codigo.length < 5) {
+        const parte1 = codigo.slice(0, 2);
+        const parte2 = codigo.slice(2);
+        return `Prof: ${parte1} | Disc: ${parte2}`;
+    }
+    const parte1 = codigo[0];
+    const parte2 = codigo.slice(1, 3);
+    const parte3 = codigo.slice(3);
+    return `#${parte1} | Prof: ${parte2} | Disc: ${parte3}`;
 }
-
-function selecao(populacaoOrdenada) {
-    const indice1 = Math.floor((Math.random() * populacaoOrdenada.length) / 2);
-    const indice2 = Math.floor(Math.random() * populacaoOrdenada.length);
-
-    return [populacaoOrdenada[indice1], populacaoOrdenada[indice2]];
-}
-
-main();

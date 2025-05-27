@@ -8,6 +8,7 @@ function algoritmoGenetico(parametrosProblema) {
     const intervaloSemestre = diasSemana * horariosDia;
     const quantidadeIndividuos = parametrosProblema.quantidadeIndividuos;
     const maxGeracoes = parametrosProblema.maxGeracoes;
+    const selecaoElitizada = parametrosProblema.selecaoElitizada;
     const pontosDeCorte = parametrosProblema.pontosDeCorte;
     const pc = parametrosProblema.pc;
     const pm = parametrosProblema.pm;
@@ -72,9 +73,9 @@ function algoritmoGenetico(parametrosProblema) {
         // });
 
         if (populacaoAvaliadaOrdenada[0].avaliacao == 0) {
-            console.log("Indivíduo com zero choques encontrado!");
+            // console.log("Indivíduo com zero choques encontrado!");
             populacaoAvaliadaOrdenada[0].geracao = geracoes;
-            console.log(populacaoAvaliadaOrdenada[0]);
+            // console.log(populacaoAvaliadaOrdenada[0]);
             return populacaoAvaliadaOrdenada[0];
         }
 
@@ -86,7 +87,10 @@ function algoritmoGenetico(parametrosProblema) {
         geracoes++;
 
         while (proximaGeracao.length < quantidadeIndividuos) {
-            const individuosSelecionados = selecao(populacaoOrdenada);
+            const individuosSelecionados = selecao(
+                populacaoOrdenada,
+                selecaoElitizada
+            );
 
             // console.log(individuosSelecionados);
 
@@ -113,7 +117,7 @@ function algoritmoGenetico(parametrosProblema) {
         }
         // console.log("próxima geração: ", proximaGeracao);
     }
-    console.log("Número máximo de gerações atingido! ");
+    // console.log("Número máximo de gerações atingido! ");
 
     const ultimaPopulacaoAvaliada = avaliacao(
         proximaGeracao,
@@ -148,7 +152,7 @@ function algoritmoGenetico(parametrosProblema) {
 
     // Caso siga o método de manter apenas o melhor indivíduo:
 
-    console.log(ultimaPopulacaoAvaliadaOrdenada[0]);
+    // console.log(ultimaPopulacaoAvaliadaOrdenada[0]);
 
     if (
         ultimaPopulacaoAvaliadaOrdenada[0].avaliacao < melhorSolucao.avaliacao
@@ -157,7 +161,7 @@ function algoritmoGenetico(parametrosProblema) {
         melhorSolucao.geracao = geracoes;
     }
 
-    console.log("Melhor solução encontrada: ", melhorSolucao);
+    // console.log("Melhor solução encontrada: ", melhorSolucao);
 
     return melhorSolucao;
 }
@@ -381,10 +385,15 @@ function ordenacaoNativa(populacao) {
     return populacao.sort((a, b) => a.avaliacao - b.avaliacao);
 }
 
-function selecao(populacaoOrdenada) {
-    const numeroAleatorio1 = Math.floor(
-        (Math.random() * populacaoOrdenada.length) / 2
-    );
+function selecao(populacaoOrdenada, selecaoElitizada) {
+    let limite = 0;
+    if (selecaoElitizada) {
+        limite = populacaoOrdenada.length / 2;
+    } else {
+        limite = populacaoOrdenada.length;
+    }
+
+    const numeroAleatorio1 = Math.floor(Math.random() * limite);
     const numeroAleatorio2 = Math.floor(
         Math.random() * populacaoOrdenada.length
     );

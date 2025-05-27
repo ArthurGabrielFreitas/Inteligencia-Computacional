@@ -98,14 +98,14 @@ th, td {
   text-align: center;
 }
 
-label.aula-indicador-label {
+label.radio-button-label {
     display: flex;
     align-items: left;
     justify-content: space-between;
     gap: 1em;
 }
 
-.aula-indicador-span {
+.radio-button-span {
     display: flex;
     align-items: center;
     gap: 0.5em;
@@ -123,11 +123,11 @@ input[type="radio"]:focus {
     outline-offset: 2px;
 }
 
-label.aula-indicador-radio {
+label.radio-button-radio {
     margin-right: 1em;
     cursor: pointer;
 }
 
-label.aula-indicador-radio:last-child {
+label.radio-button-radio:last-child {
     margin-right: 0;
 }

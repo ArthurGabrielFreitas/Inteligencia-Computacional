@@ -1,3 +1,4 @@
+const title = document.querySelector("title");
 const header = document.querySelector("header");
 const form1 = document.getElementById("formParametros1");
 const form2 = document.getElementById("formParametros2");
@@ -29,9 +30,20 @@ form2.addEventListener("submit", function (e) {
     e.preventDefault();
     const dados = new FormData(form2);
     dados.forEach((valor, chave) => {
-        parametrosProblema[chave] = Number(valor);
+        if (Number(valor)) {
+            parametrosProblema[chave] = Number(valor);
+        } else {
+            if (valor === "true") {
+                parametrosProblema[chave] = true;
+            } else if (valor === "false") {
+                parametrosProblema[chave] = false;
+            } else {
+                parametrosProblema[chave] = valor;
+            }
+        }
     });
     form2.classList.add("hidden");
+    title.innerText = "Resultados - Algoritmo Genético";
     header.getElementsByTagName("h1")[0].innerText =
         "Resultados do Algoritmo Genético";
 

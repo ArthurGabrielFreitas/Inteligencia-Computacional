@@ -53,7 +53,7 @@
                 </label>
                 <label>
                     Mostrar identificador de número da aula?
-                    <span class="aula-indicador-span">
+                    <span class="radio-button-span">
                         <input
                             type="radio"
                             id="indicadorSim"
@@ -61,7 +61,7 @@
                             value="true"
                             checked
                         />
-                        <label class="aula-indicador-label" for="indicadorSim"
+                        <label class="radio-button-label" for="indicadorSim"
                             >Sim</label
                         >
                         <input
@@ -70,7 +70,7 @@
                             name="indicadorNumeroAula"
                             value="false"
                         />
-                        <label class="aula-indicador-label" for="indicadorNao"
+                        <label class="radio-button-label" for="indicadorNao"
                             >Não</label
                         >
                     </span>
@@ -97,6 +97,26 @@
                         value="500"
                         required
                     />
+                </label>
+                <label>
+                    Utilizar seleção elitizada?
+                    <span class="radio-button-span">
+                        <input
+                            type="radio"
+                            id="elitizadaSim"
+                            name="selecaoElitizada"
+                            value="true"
+                            checked
+                        />
+                        <label class="radio-button-label" for="elitizadaSim">Sim</label>
+                        <input
+                            type="radio"
+                            id="elitizadaNao"
+                            name="selecaoElitizada"
+                            value="false"
+                        />
+                        <label class="radio-button-label" for="elitizadaNao">Não</label>
+                    </span>
                 </label>
                 <label
                     >Quantidade de Pontos de Corte:

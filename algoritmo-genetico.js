@@ -8,12 +8,12 @@ function algoritmoGenetico(parametrosProblema) {
         indicadorNumeroAula,
         quantidadeIndividuos,
         maxGeracoes,
+        selecaoElitizada,
         pontosDeCorte,
         pc,
         pm
     } = parametrosProblema;
     const intervaloSemestre = diasSemana * horariosDia;
-
     let populacao = popInicial(
         professores,
         disciplinas,
@@ -44,7 +44,7 @@ function algoritmoGenetico(parametrosProblema) {
 
         const novaGeracao = [];
         while (novaGeracao.length < quantidadeIndividuos) {
-            const pais = selecao(populacaoOrdenada.map(x => x.populacao));
+            const pais = selecao(populacaoOrdenada.map(x => x.populacao), selecaoElitizada);
             let filhos = cruzamento(
                 pais,
                 intervaloSemestre,
@@ -214,12 +214,17 @@ function ordenacaoMergeSort(populacao) {
     return resultado.concat(esq.slice(i)).concat(dir.slice(j));
 }
 
-function selecao(populacaoOrdenada) {
+function selecao(populacaoOrdenada, selecaoElitizada) {
     const n = populacaoOrdenada.length;
-    const idx1 = Math.floor(Math.random() * (n / 2));
+    let limite = n;
+    if (selecaoElitizada) {
+        limite = Math.ceil(n / 2);
+    } else {
+    }
+    const idx1 = Math.floor(Math.random() * limite);
     let idx2;
     do {
-        idx2 = Math.floor(Math.random() * n);
+        idx2 = Math.floor(Math.random() * limite);
     } while (idx2 === idx1);
     return [populacaoOrdenada[idx1], populacaoOrdenada[idx2]];
 }

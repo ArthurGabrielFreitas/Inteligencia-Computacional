@@ -29,7 +29,17 @@ form2.addEventListener("submit", function (e) {
     e.preventDefault();
     const dados = new FormData(form2);
     dados.forEach((valor, chave) => {
-        parametrosProblema[chave] = Number(valor);
+        if (Number(valor)) {
+            parametrosProblema[chave] = Number(valor);
+        } else {
+            if (valor === "true") {
+                parametrosProblema[chave] = true;
+            } else if (valor === "false") {
+                parametrosProblema[chave] = false;
+            } else {
+                parametrosProblema[chave] = valor;
+            }
+        }
     });
     form2.classList.add("hidden");
     header.getElementsByTagName("h1")[0].innerText =

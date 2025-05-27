@@ -1,3 +1,4 @@
+const title = document.querySelector("title");
 const header = document.querySelector("header");
 const form1 = document.getElementById("formParametros1");
 const form2 = document.getElementById("formParametros2");
@@ -42,6 +43,7 @@ form2.addEventListener("submit", function (e) {
         }
     });
     form2.classList.add("hidden");
+    title.innerText = "Resultados - Algoritmo Genético";
     header.getElementsByTagName("h1")[0].innerText =
         "Resultados do Algoritmo Genético";
 
